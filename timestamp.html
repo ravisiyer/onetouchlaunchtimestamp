@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>App Launch Auto-Timestamp</title>
+  </head>
+  <body>
+    <h2>Current Launch Timestamp: <span id="currTimestamp"></span></h2>
+    <h2>Previous Launch Timestamp: <span id="prevTimestamp"></span></h2>
+    <script>
+      const currTimestampId = document.getElementById("currTimestamp");
+      const prevTimestampId = document.getElementById("prevTimestamp");
+      window.addEventListener("load", () => {
+        const now = Date();
+        const prevLaunchTimestamp = localStorage.getItem("timestamp");
+        prevLaunchTimestamp && (prevTimestampId.innerText = prevLaunchTimestamp.toLocaleString().split("GMT")[0]) ;
+        localStorage.setItem("timestamp", now)
+        currTimestampId.innerText = now.toLocaleString().split("GMT")[0]
+      });
+    </script>
+  </body>
+</html>
