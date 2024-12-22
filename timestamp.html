@@ -6,11 +6,13 @@
     <title>App Launch Auto-Timestamp</title>
   </head>
   <body>
+    <button onclick="clearAllTimestamps()">Clear Launch Timestamps</button>
     <p>Current Launch Timestamp: <span id="currTimestamp"></span></p>
     <p>Previous Launch Timestamps (Max entries: <span id="maxPrevTimestamps"></span>)</p>
     <div id="prevTimestamps"></div>
     <script>
-      const MAX_PREV_LAUNCH_TIMESTAMPS = 10;
+      const MAX_PREV_LAUNCH_TIMESTAMPS = 100;
+      const LOCALSTORAGE_TIMESTAMPS_KEY = "timestamps";
       const currTimestampId = document.getElementById("currTimestamp");
       const maxPrevTimestampsId = document.getElementById("maxPrevTimestamps");
       const prevTimestampsId = document.getElementById("prevTimestamps");
@@ -19,7 +21,7 @@
       window.addEventListener("load", () => {
         const now = Date();
         let prevLaunchTimestamps = []
-        const tmp = localStorage.getItem("timestamps");
+        const tmp = localStorage.getItem(LOCALSTORAGE_TIMESTAMPS_KEY);
         if (tmp) {
           prevLaunchTimestamps = JSON.parse(tmp)
           let prevTSHTML = "";
@@ -33,8 +35,14 @@
         if (prevLaunchTimestamps.length > MAX_PREV_LAUNCH_TIMESTAMPS) {
           prevLaunchTimestamps.length = MAX_PREV_LAUNCH_TIMESTAMPS;
         }
-        localStorage.setItem("timestamps", JSON.stringify(prevLaunchTimestamps))
+        localStorage.setItem(LOCALSTORAGE_TIMESTAMPS_KEY, JSON.stringify(prevLaunchTimestamps))
       });
+
+      function clearAllTimestamps() {
+        localStorage.removeItem(LOCALSTORAGE_TIMESTAMPS_KEY);
+        prevTimestampsId.innerHTML= "";
+        currTimestampId.innerText = "";
+      }
     </script>
   </body>
 </html>
