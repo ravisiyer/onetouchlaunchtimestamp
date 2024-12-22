@@ -6,17 +6,34 @@
     <title>App Launch Auto-Timestamp</title>
   </head>
   <body>
-    <h2>Current Launch Timestamp: <span id="currTimestamp"></span></h2>
-    <h2>Previous Launch Timestamp: <span id="prevTimestamp"></span></h2>
+    <p>Current Launch Timestamp: <span id="currTimestamp"></span></p>
+    <p>Previous Launch Timestamps (Max entries: <span id="maxPrevTimestamps"></span>)</p>
+    <div id="prevTimestamps"></div>
     <script>
+      const MAX_PREV_LAUNCH_TIMESTAMPS = 10;
       const currTimestampId = document.getElementById("currTimestamp");
-      const prevTimestampId = document.getElementById("prevTimestamp");
+      const maxPrevTimestampsId = document.getElementById("maxPrevTimestamps");
+      const prevTimestampsId = document.getElementById("prevTimestamps");
+
+      maxPrevTimestampsId.innerText = MAX_PREV_LAUNCH_TIMESTAMPS.toString();
       window.addEventListener("load", () => {
         const now = Date();
-        const prevLaunchTimestamp = localStorage.getItem("timestamp");
-        prevLaunchTimestamp && (prevTimestampId.innerText = prevLaunchTimestamp.toLocaleString().split("GMT")[0]) ;
-        localStorage.setItem("timestamp", now)
+        let prevLaunchTimestamps = []
+        const tmp = localStorage.getItem("timestamps");
+        if (tmp) {
+          prevLaunchTimestamps = JSON.parse(tmp)
+          let prevTSHTML = "";
+          prevLaunchTimestamps.map ((timestamp, index) => {
+            prevTSHTML += `<p>${index+1}: ${timestamp.toLocaleString().split("GMT")[0]}</p>`
+          })
+          prevTimestampsId.innerHTML = prevTSHTML;
+        }
         currTimestampId.innerText = now.toLocaleString().split("GMT")[0]
+        prevLaunchTimestamps.unshift(now)
+        if (prevLaunchTimestamps.length > MAX_PREV_LAUNCH_TIMESTAMPS) {
+          prevLaunchTimestamps.length = MAX_PREV_LAUNCH_TIMESTAMPS;
+        }
+        localStorage.setItem("timestamps", JSON.stringify(prevLaunchTimestamps))
       });
     </script>
   </body>
