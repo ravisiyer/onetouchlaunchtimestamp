@@ -33,8 +33,8 @@
             const durationSeconds = (nowAsDateObject.getTime() - prevTimestamp.getTime())/1000
             const durationMinutes = Math.floor(durationSeconds / 60);
             const durationRemainingSeconds = durationSeconds - (durationMinutes * 60);
-            timeDurationFromPrevId.innerText = durationMinutes.toString() + " minutes" +
-              " and " + durationRemainingSeconds.toString() + " seconds"
+            timeDurationFromPrevId.innerText = durationMinutes.toString() + " minute(s)" +
+              " and " + durationRemainingSeconds.toString() + " second(s)"
             // timeDurationFromPrevId.innerText = durationSeconds.toString() + " seconds"
           }
           let prevTSHTML = "";
