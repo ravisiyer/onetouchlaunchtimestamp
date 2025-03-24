@@ -7,23 +7,36 @@
   </head>
   <body>
     <button onclick="clearAllTimestamps()">Clear Launch Timestamps</button>
-    <p>Current Launch Timestamp: <span id="currTimestamp"></span></p>
-    <p>Previous Launch Timestamps (Max entries: <span id="maxPrevTimestamps"></span>)</p>
+    <p>Current launch timestamp: <span id="currTimestamp"></span></p>
+    <p>Time duration from previous timestamp: <span id="timeDurationFromPrev"></span></p>
+    <p>Previous launch timestamps (Max entries: <span id="maxPrevTimestamps"></span>)</p>
     <div id="prevTimestamps"></div>
     <script>
       const MAX_PREV_LAUNCH_TIMESTAMPS = 100;
       const LOCALSTORAGE_TIMESTAMPS_KEY = "timestamps";
       const currTimestampId = document.getElementById("currTimestamp");
+      const timeDurationFromPrevId = document.getElementById("timeDurationFromPrev");
       const maxPrevTimestampsId = document.getElementById("maxPrevTimestamps");
       const prevTimestampsId = document.getElementById("prevTimestamps");
 
       maxPrevTimestampsId.innerText = MAX_PREV_LAUNCH_TIMESTAMPS.toString();
       window.addEventListener("load", () => {
         const now = Date();
+        // const now = new Date();  Breaks format of displayed timestamp
         let prevLaunchTimestamps = []
         const tmp = localStorage.getItem(LOCALSTORAGE_TIMESTAMPS_KEY);
         if (tmp) {
           prevLaunchTimestamps = JSON.parse(tmp)
+          if (prevLaunchTimestamps.length) {
+            const nowAsDateObject = new Date(now)
+            const prevTimestamp = new Date(prevLaunchTimestamps[0])
+            const durationSeconds = (nowAsDateObject.getTime() - prevTimestamp.getTime())/1000
+            const durationMinutes = Math.floor(durationSeconds / 60);
+            const durationRemainingSeconds = durationSeconds - (durationMinutes * 60);
+            timeDurationFromPrevId.innerText = durationMinutes.toString() + " minutes" +
+              " and " + durationRemainingSeconds.toString() + " seconds"
+            // timeDurationFromPrevId.innerText = durationSeconds.toString() + " seconds"
+          }
           let prevTSHTML = "";
           prevLaunchTimestamps.map ((timestamp, index) => {
             prevTSHTML += `<p>${index+1}: ${timestamp.toLocaleString().split("GMT")[0]}</p>`
@@ -42,6 +55,7 @@
         localStorage.removeItem(LOCALSTORAGE_TIMESTAMPS_KEY);
         prevTimestampsId.innerHTML= "";
         currTimestampId.innerText = "";
+        timeDurationFromPrevId.innerText = "";
       }
     </script>
   </body>
