@@ -8,7 +8,7 @@
   <body>
     <button onclick="clearAllTimestamps()">Clear Launch Timestamps</button>
     <p>Current launch timestamp: <span id="currTimestamp"></span></p>
-    <p>Time duration from previous timestamp: <span id="timeDurationFromPrev"></span></p>
+    <p>Duration from previous timestamp (rounded): <span id="timeDurationFromPrev"></span></p>
     <p>Previous launch timestamps (Max entries: <span id="maxPrevTimestamps"></span>)</p>
     <div id="prevTimestamps"></div>
     <script>
@@ -21,29 +21,32 @@
 
       maxPrevTimestampsId.innerText = MAX_PREV_LAUNCH_TIMESTAMPS.toString();
       window.addEventListener("load", () => {
-        const now = Date();
-        // const now = new Date();  Breaks format of displayed timestamp
+        const now = new Date();  
         let prevLaunchTimestamps = []
         const tmp = localStorage.getItem(LOCALSTORAGE_TIMESTAMPS_KEY);
         if (tmp) {
           prevLaunchTimestamps = JSON.parse(tmp)
           if (prevLaunchTimestamps.length) {
-            const nowAsDateObject = new Date(now)
             const prevTimestamp = new Date(prevLaunchTimestamps[0])
-            const durationSeconds = (nowAsDateObject.getTime() - prevTimestamp.getTime())/1000
+            // console.log(now.getTime())
+            // console.log(prevTimestamp.getTime())
+            const durationInMillis = now.getTime() - prevTimestamp.getTime()
+            // console.log(durationInMillis)
+            const durationSeconds = Math.round(durationInMillis/1000)
             const durationMinutes = Math.floor(durationSeconds / 60);
             const durationRemainingSeconds = durationSeconds - (durationMinutes * 60);
             timeDurationFromPrevId.innerText = durationMinutes.toString() + " minute(s)" +
-              " and " + durationRemainingSeconds.toString() + " second(s)"
-            // timeDurationFromPrevId.innerText = durationSeconds.toString() + " seconds"
+              " and " + durationRemainingSeconds.toString() + " second(s). [ " + 
+              + durationInMillis.toString() + " milliseconds]"
           }
           let prevTSHTML = "";
           prevLaunchTimestamps.map ((timestamp, index) => {
-            prevTSHTML += `<p>${index+1}: ${timestamp.toLocaleString().split("GMT")[0]}</p>`
+            const prevTimestampEntry = new Date(timestamp)
+            prevTSHTML += `<p>${index+1}: ${prevTimestampEntry.toString().split("GMT")[0]}</p>`
           })
           prevTimestampsId.innerHTML = prevTSHTML;
         }
-        currTimestampId.innerText = now.toLocaleString().split("GMT")[0]
+        currTimestampId.innerText = now.toString().split("GMT")[0]
         prevLaunchTimestamps.unshift(now)
         if (prevLaunchTimestamps.length > MAX_PREV_LAUNCH_TIMESTAMPS) {
           prevLaunchTimestamps.length = MAX_PREV_LAUNCH_TIMESTAMPS;
